@@ -1,0 +1,153 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 16px;
+  width: 420px;
+  background-color: #f0f4f8;
+  color: #333;
+}
+
+h3 {
+  margin-bottom: 14px;
+  color: #1a73e8;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+#emailContainer {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+#loading {
+  font-style: italic;
+  color: #888;
+  margin-bottom: 12px;
+}
+
+.form-row {
+  margin-bottom: 12px;
+}
+
+label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+input[type="text"],
+select {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+#condoCode {
+  text-transform: uppercase;
+}
+
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23666' height='24' viewBox='0 0 24 24' width='24'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position-x: 100%;
+  background-position-y: 50%;
+  padding-right: 32px;
+}
+
+#validationMessage {
+  color: red;
+  font-size: 13px;
+}
+
+#unitNotesContainer {
+  background-color: #ffffff;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+#notesDisplay {
+  display: block;
+  margin-top: 6px;
+  font-style: italic;
+  font-size: 14px;
+  color: #555;
+}
+
+#sendButton,
+#resetTutorialBtn {
+  padding: 10px 16px;
+  background-color: #1a73e8;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+#sendButton:hover {
+  background-color: #0f5bd8;
+}
+
+#resetTutorialBtn {
+  background-color: #d9534f;
+}
+
+#resetTutorialBtn:hover {
+  background-color: #c9302c;
+}
+
+#previewContainer {
+  background-color: #eaf1fb;
+  border: 1px solid #cbd7e5;
+  border-radius: 10px;
+  padding: 14px;
+  margin-top: 18px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+#previewContainer h4 {
+  color: #1a73e8;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+#previewBody {
+  max-height: 160px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 8px;
+  font-size: 14px;
+  color: #333;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.email-card.selected {
+  background-color: #e6f2ff;
+  border-left: 4px solid #1a73e8;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin: 8px 0;
+  box-shadow: inset 0 0 0 1px #c2dbf8;
+  transition: background-color 0.2s ease;
+}
+
+.email-card:hover {
+  cursor: pointer;
+  background-color: #f9fbfd;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}

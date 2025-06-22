@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Email Info</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h3>Email to Action Request</h3>
+
+  <div id="emailContainer">
+    <div id="loading">⏳ Loading emails...</div>
+  </div>
+
+  <div id="validationMessage" style="color: red; margin-top: 6px; display: none;">
+    Please fill all the fields.
+  </div>
+
+  <!-- Unit, Condo input, and Notes display (conditionally shown) -->
+  <div id="unitNotesContainer" style="margin-top: 12px; display: none;">
+    <div class="form-row">
+      <label for="unitInput"><strong>Unit:</strong></label>
+      <input type="text" id="unitInput" />
+    </div>
+
+    <div class="form-row">
+      <label for="condoCode"><strong>Condo Name (3-letter):</strong></label>
+      <input type="text" id="condoCode" maxlength="3" placeholder="ABC" />
+    </div>
+
+    <div class="form-row">
+      <label for="typeSelect"><strong>Type:</strong></label>
+      <select id="typeSelect" required>
+        <option value="">-- Select Type --</option>
+        <option value="Admin Request">Admin Request</option>
+        <option value="Maintenance Request">Maintenance Request</option>
+        <option value="Complaint">Complaint</option>
+        <option value="Feedback">Feedback</option>
+        <option value="Others">Others</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label><strong>Notes:</strong></label>
+      <span id="notesDisplay" style="font-style: italic;"></span>
+    </div>
+  </div>
+
+  <!-- Preview section -->
+  <div id="previewContainer" style="display: none; margin-top: 14px;">
+    <h4>📬 Preview of Send Task</h4>
+    <!-- <div><strong>Sender:</strong> <span id="previewSender"></span></div> -->
+    <div><strong>Title</strong> <span id="previewSubject"></span></div>
+    <div><strong>Date</strong> <span id="previewDate"></span></div>
+    <div><strong>Unit</strong> <span id="previewUnit"></span></div>
+    <div><strong>Type</strong> <span id="previewType"></span></div>
+    <div><strong>Condo</strong> <span id="previewCondoCode"></span></div>
+    <div><strong>Details</strong></div>
+    <div id="previewBody"></div>
+    <div style="margin-top: 15px;">
+      <strong>Notes</strong> <span id="previewNotes" style="font-style: italic;"></span>
+    </div>
+  </div>
+
+  <button id="sendButton">Send Data to Beeceptor</button>
+  <button id="resetTutorialBtn">Reset Tutorial</button>
+
+  <script src="popup.js"></script>
+</body>
+</html>
