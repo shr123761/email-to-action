@@ -100,58 +100,98 @@ document.addEventListener('DOMContentLoaded', () => {
 
             updateNotesAndPreview();
 
-            chrome.storage.local.get([selectedEmail.key], (result) => {
-              if (result[selectedEmail.key]) {
-                sendButton.disabled = true;
-                sendButton.innerText = "Email Already Sent";
-              } else {
-                sendButton.disabled = false;
-                sendButton.innerText = "Send Email data to Beeceptor";
-              }
-            });
+       chrome.storage.local.get([selectedEmail.key], (result) => {
+  const savedData = result[selectedEmail.key];
+
+  if (savedData) {
+    sendButton.disabled = true;
+    sendButton.innerText = "Email Already Sent";
+
+    // ✅ Auto-fill the input fields with previously saved values
+    unitInput.value = savedData.unit || '';
+    condoCodeInput.value = savedData.condoCode || '';
+    typeSelect.value = savedData.type || '';
+
+    // ✅ Update preview with saved data
+    selectedEmail = {
+      ...selectedEmail,
+      ...savedData,
+      key: selectedEmail.key
+    };
+
+    updateNotesAndPreview();
+  } else {
+    sendButton.disabled = false;
+    sendButton.innerText = "Send Email data to Beeceptor";
+
+    unitInput.value = '';
+    condoCodeInput.value = '';
+    typeSelect.value = '';
+    updateNotesAndPreview();
+  }
+});
+
           });
 
           if (i === 0) div.click();
         });
 
-        sendButton.addEventListener('click', () => {
-          if (!window.emailDataToSend) {
-            validationMessage.style.display = 'block';
-            validationMessage.textContent = 'Please fill all the fields.';
-            alert('Please fill all the fields.');
-            return;
-          }
+       sendButton.addEventListener('click', () => {
+  if (!window.emailDataToSend) {
+    validationMessage.style.display = 'block';
+    validationMessage.textContent = 'Please fill all the fields.';
+    alert('Please fill all the fields.');
+    return;
+  }
 
-          validationMessage.style.display = 'none';
+  validationMessage.style.display = 'none';
 
-          const { senderName, senderEmail, subject, date, body, notes, condoCode, unit, type, key } = window.emailDataToSend;
+  const { senderName, senderEmail, subject, date, body, notes, condoCode, unit, type, key } = window.emailDataToSend;
 
-          chrome.runtime.sendMessage({
-            action: "sendTaskToBeeceptor",
-            emailKey: key,
-            data: {
-              Title: subject,
-              Date: date,
-              Unit: unit,
-              Type: type,
-              Condo: condoCode,
-              Details: body,
-              Notes: notes,
-            }
-          }, (response) => {
-            if (response?.success) {
-              alert('✅ Json Data sent successfully to Beeceptor!');
-              sendButton.disabled = true;
-              sendButton.innerText = "Task Already Sent";
-            } else {
-              alert('❌ Failed to send Json data: ' + (response?.error || 'Unknown error'));
-              if (response?.error === "Email already sent") {
-                sendButton.disabled = true;
-                sendButton.innerText = "Email Already Sent";
-              }
-            }
-          });
-        });
+  chrome.runtime.sendMessage({
+    action: "sendTaskToBeeceptor",
+    emailKey: key,
+    data: {
+      Title: subject,
+      Date: date,
+      Unit: unit,
+      Type: type,
+      Condo: condoCode,
+      Details: body,
+      Notes: notes,
+    }
+  }, (response) => {
+    if (response?.success) {
+      // Save to local storage
+      const dataToStore = {};
+      dataToStore[key] = {
+        senderName,
+        senderEmail,
+        subject,
+        date,
+        body,
+        notes,
+        condoCode,
+        unit,
+        type
+      };
+
+      chrome.storage.local.set(dataToStore, () => {
+        alert('✅ Json Data sent successfully to Beeceptor and saved!');
+        sendButton.disabled = true;
+        sendButton.innerText = "Task Already Sent";
+      });
+
+    } else {
+      alert('❌ Failed to send Json data: ' + (response?.error || 'Unknown error'));
+      if (response?.error === "Email already sent") {
+        sendButton.disabled = true;
+        sendButton.innerText = "Email Already Sent";
+      }
+    }
+  });
+});
+
       }
     );
   });
