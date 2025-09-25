@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Email to Action Request",
-  "version": "1.0",
+  "version": "3.0",
   "description": "Email-to-Action requests allows Gmail messages to transfer to Converge Unleashed",
   "permissions": [
     "activeTab",
@@ -26,7 +26,10 @@
       "run_at": "document_idle"
     }
   ],
-  "host_permissions": ["https://mail.google.com/*"],
+ "host_permissions": [
+  "https://mail.google.com/*",
+  "https://convergedev-stage.azurewebsites.net/*"
+],
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

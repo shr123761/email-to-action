@@ -16,7 +16,7 @@
     Please fill all the fields.
   </div>
 
-  <!-- Unit, Condo input, and Notes display (conditionally shown) -->
+  <!-- Unit, Condo input -->
   <div id="unitNotesContainer" style="margin-top: 12px; display: none;">
     <div class="form-row">
       <label for="unitInput"><strong>Unit:</strong></label>
@@ -39,30 +39,21 @@
         <option value="Others">Others</option>
       </select>
     </div>
-
-    <div class="form-row">
-      <label><strong>Notes:</strong></label>
-      <span id="notesDisplay" style="font-style: italic;"></span>
-    </div>
   </div>
 
   <!-- Preview section -->
   <div id="previewContainer" style="display: none; margin-top: 14px;">
     <h4>📬 Preview of Send Task</h4>
-    <!-- <div><strong>Sender:</strong> <span id="previewSender"></span></div> -->
-    <div><strong>Title</strong> <span id="previewSubject"></span></div>
-    <div><strong>Date</strong> <span id="previewDate"></span></div>
-    <div><strong>Unit</strong> <span id="previewUnit"></span></div>
-    <div><strong>Type</strong> <span id="previewType"></span></div>
-    <div><strong>Condo</strong> <span id="previewCondoCode"></span></div>
-    <div><strong>Details</strong></div>
+    <div><strong>Title:</strong> <span id="previewSubject"></span></div>
+    <div><strong>Date:</strong> <span id="previewDate"></span></div>
+    <div><strong>Unit:</strong> <span id="previewUnit"></span></div>
+    <div><strong>Type:</strong> <span id="previewType"></span></div>
+    <div><strong>Condo:</strong> <span id="previewCondoCode"></span></div>
+    <div><strong>Details:</strong></div>
     <div id="previewBody"></div>
-    <div style="margin-top: 15px;">
-      <strong>Notes</strong> <span id="previewNotes" style="font-style: italic;"></span>
-    </div>
   </div>
 
-  <button id="sendButton">Send Data to Beeceptor</button>
+  <button id="sendButton">Send Data to Converge</button>
   <button id="resetTutorialBtn">Reset Tutorial</button>
 
   <script src="popup.js"></script>

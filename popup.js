@@ -29,9 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const unitInput = document.getElementById('unitInput');
         const condoCodeInput = document.getElementById('condoCode');
         const typeSelect = document.getElementById('typeSelect');
-        const notesDisplay = document.getElementById('notesDisplay');
 
-        function updateNotesAndPreview() {
+        function updatePreview() {
           if (!selectedEmail) return;
 
           validationMessage.style.display = 'none';
@@ -41,13 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
           const type = typeSelect.value;
 
           condoCodeInput.value = condoCode;
-          const notes = `${selectedEmail.senderName} - ${selectedEmail.senderEmail} - ${unit}`;
-          notesDisplay.textContent = notes;
 
+          // Update preview fields
           document.getElementById('previewSubject').textContent = selectedEmail.subject;
           document.getElementById('previewDate').textContent = selectedEmail.date;
           document.getElementById('previewBody').textContent = selectedEmail.body;
-          document.getElementById('previewNotes').textContent = notes;
           document.getElementById('previewCondoCode').textContent = condoCode;
           document.getElementById('previewUnit').textContent = unit;
           document.getElementById('previewType').textContent = type;
@@ -55,21 +52,20 @@ document.addEventListener('DOMContentLoaded', () => {
           const isValid = unit !== '' && condoCode !== '' && type !== '';
           window.emailDataToSend = isValid ? {
             ...selectedEmail,
-            notes,
             condoCode,
             unit,
             type
           } : null;
         }
 
-        // 👇 Add real-time event listeners for inputs
-        unitInput.addEventListener('input', updateNotesAndPreview);
-        condoCodeInput.addEventListener('input', updateNotesAndPreview);
-        typeSelect.addEventListener('change', updateNotesAndPreview);
+        // Real-time listeners
+        unitInput.addEventListener('input', updatePreview);
+        condoCodeInput.addEventListener('input', updatePreview);
+        typeSelect.addEventListener('change', updatePreview);
 
+        // Render emails
         emailList.forEach((email, i) => {
-        const emailKey = `${email.date}-${email.subject}-${email.senderEmail}-${i}`;
-
+          const emailKey = `${email.date}-${email.subject}-${email.senderEmail}-${i}`;
           const div = document.createElement('div');
           div.classList.add('email-card');
 
@@ -98,112 +94,94 @@ document.addEventListener('DOMContentLoaded', () => {
             unitNotesContainer.style.display = 'block';
             document.getElementById('previewContainer').style.display = 'block';
 
-            updateNotesAndPreview();
+            updatePreview();
 
-       chrome.storage.local.get([selectedEmail.key], (result) => {
-  const savedData = result[selectedEmail.key];
+            // Restore saved state if exists
+            chrome.storage.local.get([selectedEmail.key], (result) => {
+              const savedData = result[selectedEmail.key];
 
-  if (savedData) {
-    sendButton.disabled = true;
-    sendButton.innerText = "Email Already Sent";
+              if (savedData) {
+                sendButton.disabled = true;
+                sendButton.innerText = "Email Already Sent";
 
-    // ✅ Auto-fill the input fields with previously saved values
-    unitInput.value = savedData.unit || '';
-    condoCodeInput.value = savedData.condoCode || '';
-    typeSelect.value = savedData.type || '';
+                unitInput.value = savedData.unit || '';
+                condoCodeInput.value = savedData.condoCode || '';
+                typeSelect.value = savedData.type || '';
 
-    // ✅ Update preview with saved data
-    selectedEmail = {
-      ...selectedEmail,
-      ...savedData,
-      key: selectedEmail.key
-    };
-
-    updateNotesAndPreview();
-  } else {
-    sendButton.disabled = false;
-    sendButton.innerText = "Send Email data to Beeceptor";
-
-    unitInput.value = '';
-    condoCodeInput.value = '';
-    typeSelect.value = '';
-    updateNotesAndPreview();
-  }
-});
-
+                selectedEmail = { ...selectedEmail, ...savedData, key: selectedEmail.key };
+                updatePreview();
+              } else {
+                sendButton.disabled = false;
+                sendButton.innerText = "Send Email Data to Converge";
+                unitInput.value = '';
+                condoCodeInput.value = '';
+                typeSelect.value = '';
+                updatePreview();
+              }
+            });
           });
 
           if (i === 0) div.click();
         });
 
-       sendButton.addEventListener('click', () => {
-  if (!window.emailDataToSend) {
-    validationMessage.style.display = 'block';
-    validationMessage.textContent = 'Please fill all the fields.';
-    alert('Please fill all the fields.');
-    return;
-  }
+        // Send button handler
+        sendButton.addEventListener('click', () => {
+          if (!window.emailDataToSend) {
+            validationMessage.style.display = 'block';
+            validationMessage.textContent = 'Please fill all the fields.';
+            alert('Please fill all the fields.');
+            return;
+          }
 
-  validationMessage.style.display = 'none';
+          validationMessage.style.display = 'none';
+          const { senderEmail, subject, date, body, condoCode, unit, type, key } = window.emailDataToSend;
 
-  const { senderName, senderEmail, subject, date, body, notes, condoCode, unit, type, key } = window.emailDataToSend;
+          const payload = {
+            To: "dean@convergecondo.com",
+            From: senderEmail,
+            Title: subject,
+            Date: date,
+            Unit: unit,
+            Type: type,
+            Condo: condoCode,
+            Details: body
+          };
 
-  chrome.runtime.sendMessage({
-    action: "sendTaskToBeeceptor",
-    emailKey: key,
-    data: {
-      Title: subject,
-      Date: date,
-      Unit: unit,
-      Type: type,
-      Condo: condoCode,
-      Details: body,
-      Notes: notes,
-    }
-  }, (response) => {
-    if (response?.success) {
-      // Save to local storage
-      const dataToStore = {};
-      dataToStore[key] = {
-        senderName,
-        senderEmail,
-        subject,
-        date,
-        body,
-        notes,
-        condoCode,
-        unit,
-        type
-      };
+          chrome.runtime.sendMessage({
+            action: "sendTaskToConverge",
+            emailKey: key,
+            data: payload
+          }, (response) => {
+            if (response?.success) {
+              const dataToStore = {};
+              dataToStore[key] = payload;
 
-      chrome.storage.local.set(dataToStore, () => {
-        alert('✅ Json Data sent successfully to Beeceptor and saved!');
-        sendButton.disabled = true;
-        sendButton.innerText = "Task Already Sent";
-      });
-
-    } else {
-      alert('❌ Failed to send Json data: ' + (response?.error || 'Unknown error'));
-      if (response?.error === "Email already sent") {
-        sendButton.disabled = true;
-        sendButton.innerText = "Email Already Sent";
-      }
-    }
-  });
-});
-
+              chrome.storage.local.set(dataToStore, () => {
+                alert('✅ Data sent successfully to Converge and saved!');
+                sendButton.disabled = true;
+                sendButton.innerText = "Task Already Sent";
+              });
+            } else {
+              alert('❌ Failed to send data: ' + (response?.error || 'Unknown error'));
+              if (response?.error === "Task already sent") {
+                sendButton.disabled = true;
+                sendButton.innerText = "Task Already Sent";
+              }
+            }
+          });
+        });
       }
     );
   });
 
   document.getElementById("resetTutorialBtn").addEventListener("click", () => {
     chrome.storage.local.remove("tutorialShown", () => {
-      alert("✅ Tutorial reset. It will show again next time you open Gmail.");
+      alert("✅ Tutorial reset. It will show again next time.");
     });
   });
 });
 
-// 👇 No changes here, kept as-is
+// Extract Gmail email details inside the tab
 function extractEmailDetailsFromPage() {
   try {
     const emailNodes = document.querySelectorAll('div[role="listitem"]');

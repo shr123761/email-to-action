@@ -44,6 +44,9 @@ function showGuidedTour() {
   }
   
   function showLocalTutorialVideo() {
+      document.querySelector('video')?.remove();
+  document.getElementById('closeTutorialBtn')?.remove();
+
     const video = document.createElement("video");
     video.src = chrome.runtime.getURL("tutorial.mp4");
     video.controls = true;

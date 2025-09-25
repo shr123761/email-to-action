@@ -1,15 +1,8 @@
-// background.js
-
-chrome.runtime.onInstalled.addListener(() => {
-  console.log("✅ Gmail to Task Creator Extension Installed!");
-});
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === "sendTaskToBeeceptor") {
+  if (message.action === "sendTaskToConverge") {
     const taskData = message.data;
     const emailKey = message.emailKey;
 
-    // Check if the task was already sent
     chrome.storage.local.get([emailKey], (result) => {
       if (result[emailKey]) {
         console.log(`⚠️ Task for ${emailKey} already sent.`);
@@ -17,21 +10,31 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return;
       }
 
-      // Send data to Beeceptor
-      fetch("https://taskmanagement.free.beeceptor.com", {
+      fetch("https://convergedev-stage.azurewebsites.net/api/integration/testemailactionrequest10122", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(taskData),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(taskData)
       })
-        .then((response) => response.text())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+          }
+          return response.json().catch(() => ({})); // avoid JSON parse crash
+        })
         .then((result) => {
-          console.log("✅ Task sent successfully:", result);
-          // Store this task as "already sent"
-          chrome.storage.local.set({ [emailKey]: true }, () => {
-            sendResponse({ success: true, result });
-          });
+          console.log("📩 API Response:", result);
+
+          // Handle boolean true/false OR Success/Error objects
+          if (result === true || result.Success === "true" || result.success === true) {
+            chrome.storage.local.set({ [emailKey]: taskData }, () => {
+              sendResponse({ success: true, result });
+            });
+          } else {
+            sendResponse({
+              success: false,
+              error: result.Error || result.error || "Unknown API error"
+            });
+          }
         })
         .catch((error) => {
           console.error("❌ Failed to send task:", error);
@@ -39,6 +42,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
     });
 
-    return true; // Keeps message channel alive for async response
+    return true;
   }
 });
