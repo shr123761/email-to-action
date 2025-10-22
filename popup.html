@@ -16,7 +16,7 @@
     Please fill all the fields.
   </div>
 
-  <!-- Unit, Condo input -->
+  <!-- Unit, Condo, Type, Notes -->
   <div id="unitNotesContainer" style="margin-top: 12px; display: none;">
     <div class="form-row">
       <label for="unitInput"><strong>Unit:</strong></label>
@@ -39,6 +39,16 @@
         <option value="Others">Others</option>
       </select>
     </div>
+
+    <!-- ✅ NEW NOTES FIELD -->
+    <div class="form-row">
+      <label for="notesInput"><strong>Notes (Name - Email - Nnit):</strong></label>
+      <input
+        type="text"
+        id="notesInput"
+        placeholder="e.g. Shrey Agrawal - shreyagrawal499@gmail.com - A123"
+      />
+    </div>
   </div>
 
   <!-- Preview section -->
@@ -49,6 +59,7 @@
     <div><strong>Unit:</strong> <span id="previewUnit"></span></div>
     <div><strong>Type:</strong> <span id="previewType"></span></div>
     <div><strong>Condo:</strong> <span id="previewCondoCode"></span></div>
+    <div><strong>Notes:</strong> <span id="previewNotes"></span></div> <!-- ✅ NEW PREVIEW LINE -->
     <div><strong>Details:</strong></div>
     <div id="previewBody"></div>
   </div>
